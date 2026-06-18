@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Personal Flyer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Concert+One&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Concert One', cursive;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+    }
+
+    .flyer-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 60px 40px;
+      background-color: rgba(0, 0, 0, 0.6);
+      box-sizing: border-box;
+      overflow-y: auto;
+      z-index: 1; /* lower z-index so buttons on top */
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 0.2em;
+      letter-spacing: 2px;
+      text-shadow: 2px 2px 6px #000;
+    }
+
+    .tagline {
+      font-size: 1.2em;
+      margin-bottom: 1.5em;
+      color: #f0f0f0;
+      text-shadow: 1px 1px 4px #000;
+    }
+
+    .headliners { font-size: 2.5em; font-weight: 900; }
+    .mid        { font-size: 1.5em; font-weight: 600; margin-top: 20px; }
+    .small      { font-size: 1em;   font-weight: 400; margin-top: 20px; opacity: 0.85; }
+
+    .artist {
+      display: inline-block;
+      margin: 10px;
+      text-shadow: 1px 1px 3px #000;
+    }
+
+    .controls {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      gap: 10px;
+      z-index: 9999; /* on top */
+    }
+
+    .logout {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      z-index: 9999; /* on top */
+    }
+
+    .time-range-controls {
+      position: absolute;
+      top: 15px;
+      left: 150px;
+      display: flex;
+      gap: 10px;
+      z-index: 9999; /* on top */
+    }
+
+    .button {
+      background-color: white;
+      color: black;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      text-decoration: none;
+      box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .logout .button {
+      background-color: #ff4d4d;
+      color: white;
+    }
+
+    .button.active {
+      background-color: #1db954;
+      color: white;
+    }
+
+    .footer {
+      margin-top: 50px;
+      font-size: 0.8em;
+      opacity: 0.85;
+      text-shadow: 1px 1px 3px #000;
+    }
+
+    a:hover button {
+      background-color: #1db954;
+      color: white;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="logout">
+    <a href="/logout">
+      <button class="button">Not you? Log out</button>
+    </a>
+  </div>
+
+  <div class="time-range-controls">
+    <a href="/flyer?mode={{ mode }}&time_range=short_term">
+      <button class="button {% if time_range == 'short_term' %}active{% endif %}">1 Month</button>
+    </a>
+    <a href="/flyer?mode={{ mode }}&time_range=medium_term">
+      <button class="button {% if time_range == 'medium_term' %}active{% endif %}">6 Months</button>
+    </a>
+    <a href="/flyer?mode={{ mode }}&time_range=long_term">
+      <button class="button {% if time_range == 'long_term' %}active{% endif %}">1 Year</button>
+    </a>
+  </div>
+
+  <div class="controls">
+    <a href="/flyer?mode={{ 'artists' if mode == 'songs' else 'songs' }}&time_range={{ time_range }}">
+      <button class="button">
+        See Top {{ 'Artists' if mode == 'songs' else 'Songs' }}
+      </button>
+    </a>
+
+    <!-- Changed download button to plain button (no <a>) -->
+    <button id="downloadBtn" class="button">Download Flyer</button>
+  </div>
+
+  <div class="flyer-container" id="flyerContent">
+    <h1>Your personal festival 2025</h1>
+    <p class="tagline">Your Personalized Spotify {{ 'Song' if mode == 'songs' else 'Artist' }} Festival Lineup</p>
+
+    <div class="headliners">
+      {% for item in headliners %}
+        <div class="artist">
+          <a href="{{ item.url }}" target="_blank" style="color: inherit; text-decoration: none;">
+            {{ item.label }}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="mid">
+      {% for item in mid %}
+        <div class="artist">
+          <a href="{{ item.url }}" target="_blank" style="color: inherit; text-decoration: none;">
+            {{ item.label }}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="small">
+      {% for item in small %}
+        <div class="artist">
+          <a href="{{ item.url }}" target="_blank" style="color: inherit; text-decoration: none;">
+            {{ item.label }}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="footer">
+      🌞 Catch the vibes – Inspired by your Spotify history 🎶
+    </div>
+  </div>
+
+  <!-- html2canvas Script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    document.getElementById("downloadBtn").addEventListener("click", function (e) {
+      e.preventDefault();
+      html2canvas(document.getElementById("flyerContent")).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'festival_flyer.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    });
+  </script>
+</body>
+</html>
