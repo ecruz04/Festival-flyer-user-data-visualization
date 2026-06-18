@@ -1,0 +1,6 @@
+.env
+.cache
+flyer.png
+__pycache__/
+*.pyc
+.vscode/
